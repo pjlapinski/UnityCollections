@@ -25,7 +25,8 @@ namespace Collections
 
         private const int ResizeFactor = 2;
 
-        [Serializable] private struct Bucket
+        [Serializable]
+        private struct Bucket
         {
             [field: SerializeField] internal T Value { get; set; }
             [field: SerializeField] internal int Hash { get; set; }
@@ -41,21 +42,9 @@ namespace Collections
         public HashSet(int capacity)
         {
             Count = 0;
+            if (capacity < 0)
+                throw new ArgumentException("Capacity cannot be lower than zero");
             _buckets = new Bucket[capacity];
-#if UNITY_EDITOR
-            try
-            {
-                _isEditorInPlayMode = EditorApplication.isPlaying;
-            }
-            catch (UnityException)
-            {
-                _isEditorInPlayMode = false;
-            }
-            EditorApplication.playModeStateChanged += change =>
-            {
-                _isEditorInPlayMode = change == PlayModeStateChange.EnteredPlayMode;
-            };
-#endif
         }
 
         public HashSet() : this(0) { }
@@ -143,7 +132,8 @@ namespace Collections
                     }
 
                     targetBucket = ++targetBucket % _buckets.Length;
-                } else return false;
+                }
+                else return false;
             }
             return true;
         }
@@ -360,7 +350,7 @@ namespace Collections
 
                 mask[idx] = idx > -1;
             }
-            if (otherCount == Count) 
+            if (otherCount == Count)
                 return false;
 
             for (var i = 0; i < _buckets.Length; ++i)
@@ -449,17 +439,23 @@ namespace Collections
 
         #region Unity Serialization
 
-#if UNITY_EDITOR
-        private bool _isEditorInPlayMode;
-#endif
-
-        public void OnBeforeSerialize() { } 
+        public void OnBeforeSerialize() { }
 
         public void OnAfterDeserialize()
         {
 #if UNITY_EDITOR
 
-            if (!_isEditorInPlayMode)
+            bool playMode;
+            try
+            {
+                playMode = EditorApplication.isPlaying;
+            }
+            catch (UnityException)
+            {
+                playMode = false;
+            }
+
+            if (!playMode)
             {
                 _buckets = Array.Empty<Bucket>();
                 Count = 0;
@@ -469,7 +465,8 @@ namespace Collections
             if (_buckets.Length == 0)
             {
                 foreach (var value in _initialValues)
-                    Add(value);
+                    if (!Add(value))
+                        Debug.LogError("Duplicate values in the set. The duplicates will be ignored");
             }
         }
 

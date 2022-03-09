@@ -68,7 +68,8 @@ namespace Collections
 
         private const int ResizeFactor = 2;
 
-        [Serializable] private struct Bucket
+        [Serializable]
+        private struct Bucket
         {
             [field: SerializeField] internal TKey Key { get; set; }
             [field: SerializeField] internal TValue Value { get; set; }
@@ -84,21 +85,9 @@ namespace Collections
         public Dictionary(int capacity)
         {
             Count = 0;
+            if (capacity < 0)
+                throw new ArgumentException("Capacity cannot be lower than zero");
             _buckets = new Bucket[capacity];
-#if UNITY_EDITOR
-            try
-            {
-                _isEditorInPlayMode = EditorApplication.isPlaying;
-            }
-            catch (UnityException)
-            {
-                _isEditorInPlayMode = false;
-            }
-            EditorApplication.playModeStateChanged += change =>
-            {
-                _isEditorInPlayMode = change == PlayModeStateChange.EnteredPlayMode;
-            };
-#endif
         }
 
         public Dictionary() : this(0) { }
@@ -123,7 +112,7 @@ namespace Collections
 
         public void Add(TKey key, TValue value)
         {
-            if (!Insert(key, value, true)) 
+            if (!Insert(key, value, true))
                 throw new DuplicateKeyException($"The dictionary already has the key {key}.");
         }
 
@@ -158,7 +147,8 @@ namespace Collections
                     }
 
                     targetBucket = ++targetBucket % _buckets.Length;
-                } else return false;
+                }
+                else return false;
             }
             return false;
         }
@@ -188,7 +178,8 @@ namespace Collections
                     }
 
                     targetBucket = ++targetBucket % _buckets.Length;
-                } else return false;
+                }
+                else return false;
             }
             return false;
         }
@@ -207,7 +198,7 @@ namespace Collections
                     _buckets[i].Value = default;
                     --Count;
                 }
-            } 
+            }
             TryTrim();
         }
 
@@ -392,17 +383,23 @@ namespace Collections
 
         #region Unity Serialization
 
-#if UNITY_EDITOR
-        private bool _isEditorInPlayMode;
-#endif
-
-        public void OnBeforeSerialize() { } 
+        public void OnBeforeSerialize() { }
 
         public void OnAfterDeserialize()
         {
 #if UNITY_EDITOR
 
-            if (!_isEditorInPlayMode)
+            bool playMode;
+            try
+            {
+                playMode = EditorApplication.isPlaying;
+            }
+            catch (UnityException)
+            {
+                playMode = false;
+            }
+
+            if (!playMode)
             {
                 _buckets = Array.Empty<Bucket>();
                 Count = 0;
@@ -412,7 +409,7 @@ namespace Collections
             if (_buckets.Length == 0)
             {
                 foreach (var (key, value) in _initialValues)
-                    TryAdd(key, value);
+                    Add(key, value);
             }
         }
 
@@ -428,7 +425,7 @@ namespace Collections
 
     public class KeyNotFoundException : ArgumentException
     {
-        public KeyNotFoundException (string message) : base(message) { }
+        public KeyNotFoundException(string message) : base(message) { }
     }
 
     #endregion
