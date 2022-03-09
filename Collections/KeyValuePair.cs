@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Violet.Utilities.Collections
+namespace Collections
 {
     [Serializable]
     public struct KeyValuePair<TKey, TValue>

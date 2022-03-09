@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Framework;
-using Violet.Utilities.Collections;
+using Collections;
 
 namespace Tests;
 

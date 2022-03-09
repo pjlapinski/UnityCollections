@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Violet.Utilities.Collections
+namespace Collections
 {
-    public class List<T> : IList<T>
+    [Serializable]
+    public class List<T> : IList<T>, ISerializationCallbackReceiver
     {
         [SerializeField] private T[] _initialValues;
 

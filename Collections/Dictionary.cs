@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Violet.Utilities.Collections
+namespace Collections
 {
     [Serializable]
     public class Dictionary<TKey, TValue> : ICollection<KeyValuePair<TKey, TValue>>, ISerializationCallbackReceiver
