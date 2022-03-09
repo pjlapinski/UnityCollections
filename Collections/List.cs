@@ -50,21 +50,9 @@ namespace Collections
         public List(int capacity)
         {
             Count = 0;
+            if (capacity < 0)
+                throw new ArgumentException("Capacity cannot be lower than zero");
             _list = new T[capacity];
-#if UNITY_EDITOR
-            try
-            {
-                _isEditorInPlayMode = EditorApplication.isPlaying;
-            }
-            catch (UnityException)
-            {
-                _isEditorInPlayMode = false;
-            }
-            EditorApplication.playModeStateChanged += change =>
-            {
-                _isEditorInPlayMode = change == PlayModeStateChange.EnteredPlayMode;
-            };
-#endif
         }
 
         public List() : this(0) { }
@@ -82,6 +70,11 @@ namespace Collections
         #endregion
 
         #region Public Methods
+
+        public void AddFirst(T item)
+        {
+            Insert(0, item);
+        }
 
         public void Add(T item)
         {
@@ -297,17 +290,23 @@ namespace Collections
 
         #region Unity Serialization
 
-#if UNITY_EDITOR
-        private bool _isEditorInPlayMode;
-#endif
-
-        public void OnBeforeSerialize() { } 
+        public void OnBeforeSerialize() { }
 
         public void OnAfterDeserialize()
         {
 #if UNITY_EDITOR
 
-            if (!_isEditorInPlayMode)
+            bool playMode;
+            try
+            {
+                playMode = EditorApplication.isPlaying;
+            }
+            catch (UnityException)
+            {
+                playMode = false;
+            }
+
+            if (!playMode)
             {
                 _list = Array.Empty<T>();
                 Count = 0;
