@@ -178,13 +178,13 @@ namespace Violet.Utilities.Collections
             return false;
         }
 
-        public T? Find(Predicate<T> predicate)
+        public T Find(Predicate<T> predicate)
         {
             var idx = FindIndex(predicate);
             return idx == -1 ? default : _list[idx];
         }
 
-        public T? FindLast(Predicate<T> predicate)
+        public T FindLast(Predicate<T> predicate)
         {
             var idx = FindLastIndex(predicate);
             return idx == -1 ? default : _list[idx];
