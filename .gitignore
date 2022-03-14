@@ -3,3 +3,4 @@
 *.DotSettings.user
 **/bin/
 **/obj/
+.vscode/
