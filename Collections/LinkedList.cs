@@ -16,8 +16,8 @@ namespace Collections
         [SerializeField] public int Count { get; private set; }
         public bool IsReadOnly => false;
         public bool Empty => Count == 0;
-        public LinkedListNode<T>? First { get; private set; }
-        public LinkedListNode<T>? Last { get; private set; }
+        public LinkedListNode<T> First { get; private set; }
+        public LinkedListNode<T> Last { get; private set; }
 
         #endregion
 
@@ -75,6 +75,42 @@ namespace Collections
             node.Previous = Last;
             node.Next = null;
             Last = node;
+
+            ++Count;
+        }
+
+        public void AddAfter(LinkedListNode<T> node, T item) =>
+            AddAfter(node, new LinkedListNode<T> { Value = item });
+
+        public void AddAfter(LinkedListNode<T> node, LinkedListNode<T> newNode)
+        {
+            if (node == Last)
+            {
+                AddLast(newNode);
+                return;
+            }
+            node.Next.Previous = newNode;
+            newNode.Previous = node;
+            newNode.Next = node.Next;
+            node.Next = newNode;
+
+            ++Count;
+        }
+
+        public void AddBefore(LinkedListNode<T> node, T item) =>
+            AddBefore(node, new LinkedListNode<T> { Value = item });
+
+        public void AddBefore(LinkedListNode<T> node, LinkedListNode<T> newNode)
+        {
+            if (node == First)
+            {
+                AddFirst(newNode);
+                return;
+            }
+            node.Previous.Next = newNode;
+            newNode.Next = node;
+            newNode.Previous = node.Previous;
+            node.Previous = newNode;
 
             ++Count;
         }
@@ -179,6 +215,30 @@ namespace Collections
             }
 
             return false;
+        }
+
+        public LinkedListNode<T> Find(T item)
+        {
+            var node = First;
+            while (node != null)
+            {
+                if (node.Value.Equals(item) || (node.Value == null && item == null))
+                    return node;
+                node = node.Next;
+            }
+            return null;
+        }
+
+        public LinkedListNode<T> FindLast(T item)
+        {
+            var node = Last;
+            while (node != null)
+            {
+                if (node.Value.Equals(item) || (node.Value == null && item == null))
+                    return node;
+                node = node.Previous;
+            }
+            return null;
         }
 
         public IEnumerator<T> GetEnumerator()

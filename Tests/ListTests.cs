@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Collections;
@@ -294,7 +294,7 @@ public class ListTests
     }
 
     [TestCaseSource(nameof(MultipleValuesSource))]
-    public void FindLast_GetsAllOccurrences(System.Collections.Generic.List<string> values)
+    public void FindAll_GetsAllOccurrences(System.Collections.Generic.List<string> values)
     {
         const string someString = "some string";
         _sut.AddRange(values);
