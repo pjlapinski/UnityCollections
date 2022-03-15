@@ -8,7 +8,7 @@ namespace Collections
 {
     public abstract class PriorityQueue<TValue, TPriority> : ISerializationCallbackReceiver where TPriority : IComparable<TPriority>
     {
-        [SerializeField] private PriorityQueueElement<TValue, TPriority>[] _initialValues;
+        [SerializeField] private PriorityQueueElement[] _initialValues;
 
         #region Public Properties
 
@@ -21,8 +21,25 @@ namespace Collections
         #region Protected & Private Fields
 
         private const int ResizeFactor = 2;
+        [Serializable]
+        protected struct PriorityQueueElement
+        {
+            [field: SerializeField] public TValue Value { get; private set; }
+            [field: SerializeField] public TPriority Priority { get; private set; }
 
-        [SerializeField, HideInInspector] protected PriorityQueueElement<TValue, TPriority>[] _elements;
+            public PriorityQueueElement(TValue value, TPriority priority)
+            {
+                Value = value;
+                Priority = priority;
+            }
+
+            public void Deconstruct(out TValue value, out TPriority priority)
+            {
+                value = Value;
+                priority = Priority;
+            }
+        }
+        [SerializeField, HideInInspector] protected PriorityQueueElement[] _elements;
 
         #endregion
 
@@ -33,7 +50,7 @@ namespace Collections
             Count = 0;
             if (capacity < 0)
                 throw new ArgumentException("Capacity cannot be lower than zero");
-            _elements = new PriorityQueueElement<TValue, TPriority>[capacity];
+            _elements = new PriorityQueueElement[capacity];
         }
 
         protected PriorityQueue() : this(0) { }
@@ -50,7 +67,7 @@ namespace Collections
         public void Clear()
         {
             Count = 0;
-            _elements = new PriorityQueueElement<TValue, TPriority>[1];
+            _elements = new PriorityQueueElement[1];
         }
 
         public bool TryDequeue(out TValue value, out TPriority priority)
@@ -81,7 +98,7 @@ namespace Collections
         {
             if (Count + 1 >= _elements.Length)
                 Resize();
-            _elements[Count] = new PriorityQueueElement<TValue, TPriority>(value, priority);
+            _elements[Count] = new PriorityQueueElement(value, priority);
             HeapifyUp(Count++);
         }
 
@@ -141,12 +158,12 @@ namespace Collections
         {
             if (_elements.Length == 0)
             {
-                _elements = new PriorityQueueElement<TValue, TPriority>[1];
+                _elements = new PriorityQueueElement[1];
                 return;
             }
 
-            var oldElements = (PriorityQueueElement<TValue, TPriority>[])_elements.Clone();
-            _elements = new PriorityQueueElement<TValue, TPriority>[_elements.Length * ResizeFactor];
+            var oldElements = (PriorityQueueElement[])_elements.Clone();
+            _elements = new PriorityQueueElement[_elements.Length * ResizeFactor];
             for (var i = 0; i < Count; ++i)
                 _elements[i] = oldElements[i];
         }
@@ -155,8 +172,8 @@ namespace Collections
         {
             if ((_elements.Length + 1) / ResizeFactor < Count) return;
 
-            var oldList = (PriorityQueueElement<TValue, TPriority>[])_elements.Clone();
-            _elements = new PriorityQueueElement<TValue, TPriority>[(_elements.Length + 1) / ResizeFactor];
+            var oldList = (PriorityQueueElement[])_elements.Clone();
+            _elements = new PriorityQueueElement[(_elements.Length + 1) / ResizeFactor];
             for (var i = 0; i < _elements.Length; ++i)
                 _elements[i] = oldList[i];
         }
