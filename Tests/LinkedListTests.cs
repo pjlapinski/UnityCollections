@@ -324,7 +324,7 @@ public class LinkedListTests
 
     #endregion
 
-    #region Deriving types
+    #region Deriving Types
 
     [TestCaseSource(nameof(SingleValuesSource))]
     public void Queue_HasCorrectOrdering(string value)

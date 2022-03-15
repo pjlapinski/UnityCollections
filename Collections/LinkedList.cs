@@ -296,6 +296,7 @@ namespace Collections
             Clear();
             foreach (var element in _list)
                 Add(element);
+            _list = Array.Empty<T>();
         }
 
         #endregion
