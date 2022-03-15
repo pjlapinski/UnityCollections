@@ -200,7 +200,7 @@ namespace Collections
 
             if (!playMode)
             {
-                _elements = Array.Empty<PriorityQueueElement<TValue, TPriority>>();
+                _elements = Array.Empty<PriorityQueueElement>();
                 Count = 0;
             }
 
