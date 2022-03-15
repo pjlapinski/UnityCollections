@@ -133,22 +133,18 @@ namespace Collections
 
             for (var i = 0; i < _buckets.Length; ++i)
             {
-                if (_buckets[targetBucket].Inserted)
+                if (_buckets[targetBucket].Inserted && _buckets[targetBucket].Hash.Equals(hash))
                 {
-                    if (_buckets[targetBucket].Hash == hash)
-                    {
-                        _buckets[targetBucket].Inserted = false;
-                        _buckets[targetBucket].Hash = default;
-                        _buckets[targetBucket].Key = default;
-                        _buckets[targetBucket].Value = default;
-                        --Count;
-                        TryTrim();
-                        return true;
-                    }
-
-                    targetBucket = ++targetBucket % _buckets.Length;
+                    _buckets[targetBucket].Inserted = false;
+                    _buckets[targetBucket].Hash = default;
+                    _buckets[targetBucket].Key = default;
+                    _buckets[targetBucket].Value = default;
+                    --Count;
+                    TryTrim();
+                    return true;
                 }
-                else return false;
+
+                targetBucket = ++targetBucket % _buckets.Length;
             }
             return false;
         }
@@ -162,24 +158,19 @@ namespace Collections
 
             for (var i = 0; i < _buckets.Length; ++i)
             {
-                if (_buckets[targetBucket].Inserted)
+                if (_buckets[targetBucket].Inserted && _buckets[targetBucket].Hash.Equals(hash))
                 {
-                    if (_buckets[targetBucket].Hash == hash)
-                    {
-                        if (!_buckets[targetBucket].Value.Equals(kvp.Value))
-                            return false;
-                        _buckets[targetBucket].Inserted = false;
-                        _buckets[targetBucket].Hash = default;
-                        _buckets[targetBucket].Key = default;
-                        _buckets[targetBucket].Value = default;
-                        --Count;
-                        TryTrim();
-                        return true;
-                    }
-
-                    targetBucket = ++targetBucket % _buckets.Length;
+                    if (!_buckets[targetBucket].Value.Equals(kvp.Value))
+                        return false;
+                    _buckets[targetBucket].Inserted = false;
+                    _buckets[targetBucket].Hash = default;
+                    _buckets[targetBucket].Key = default;
+                    _buckets[targetBucket].Value = default;
+                    --Count;
+                    TryTrim();
+                    return true;
                 }
-                else return false;
+                targetBucket = ++targetBucket % _buckets.Length;
             }
             return false;
         }
@@ -226,20 +217,13 @@ namespace Collections
 
             for (var i = 0; i < _buckets.Length; ++i)
             {
-                if (_buckets[targetBucket].Inserted)
+                if (_buckets[targetBucket].Inserted && _buckets[targetBucket].Hash.Equals(hash))
                 {
-                    if (_buckets[targetBucket].Hash == hash)
-                    {
-                        value = _buckets[targetBucket].Value;
-                        return true;
-                    }
-                    targetBucket = ++targetBucket % _buckets.Length;
+                    value = _buckets[targetBucket].Value;
+                    return true;
                 }
-                else
-                {
-                    value = default;
-                    return false;
-                }
+
+                targetBucket = ++targetBucket % _buckets.Length;
             }
 
             value = default;
@@ -257,8 +241,6 @@ namespace Collections
             {
                 if (_buckets[targetBucket].Inserted && _buckets[targetBucket].Hash == hash)
                     return true;
-                if (!_buckets[targetBucket].Inserted)
-                    return false;
 
                 targetBucket = ++targetBucket % _buckets.Length;
             }
@@ -370,7 +352,8 @@ namespace Collections
 
         private void TryTrim()
         {
-            if (_buckets.Length + 1 / ResizeFactor >= Count) return;
+            if (_buckets.Length / ResizeFactor >= Count) return;
+            Count = 0;
 
             var oldBuckets = (Bucket[])_buckets.Clone();
             _buckets = new Bucket[_buckets.Length + 1 / ResizeFactor];

@@ -120,22 +120,17 @@ namespace Collections
 
             for (var i = 0; i < _buckets.Length; ++i)
             {
-                if (_buckets[targetBucket].Inserted)
+                if (_buckets[targetBucket].Inserted && _buckets[targetBucket].Hash == hash)
                 {
-                    if (_buckets[targetBucket].Hash == hash)
-                    {
-                        _buckets[targetBucket].Inserted = false;
-                        _buckets[i].Hash = default;
-                        _buckets[i].Value = default;
-                        --Count;
-                        return true;
-                    }
-
-                    targetBucket = ++targetBucket % _buckets.Length;
+                    _buckets[targetBucket].Inserted = false;
+                    _buckets[targetBucket].Hash = default;
+                    _buckets[targetBucket].Value = default;
+                    --Count;
+                    return true;
                 }
-                else return false;
+                targetBucket = ++targetBucket % _buckets.Length;
             }
-            return true;
+            return false;
         }
 
         public void RemoveWhere(Predicate<T> predicate)
@@ -178,7 +173,7 @@ namespace Collections
 
             for (var i = 0; i < _buckets.Length; ++i)
             {
-                if (_buckets[targetBucket].Inserted && _buckets[targetBucket].Hash == hash)
+                if (_buckets[targetBucket].Inserted && _buckets[targetBucket].Hash.Equals(hash))
                 {
                     actualValue = _buckets[targetBucket].Value;
                     return true;
@@ -426,7 +421,8 @@ namespace Collections
 
         private void TryTrim()
         {
-            if (_buckets.Length + 1 / ResizeFactor >= Count) return;
+            if (_buckets.Length / ResizeFactor >= Count) return;
+            Count = 0;
 
             var oldBuckets = (Bucket[])_buckets.Clone();
             _buckets = new Bucket[_buckets.Length + 1 / ResizeFactor];

@@ -17,28 +17,35 @@ namespace Collections
             var leftIdx = GetLeftChildIndex(idx);
             var rightIdx = GetRightChildIndex(idx);
 
-            var smallestIdx = idx;
-
-            if (leftIdx < Count && _elements[leftIdx].Priority.CompareTo(_elements[idx].Priority) < 0)
-                smallestIdx = leftIdx;
-
-            if (rightIdx < Count && _elements[rightIdx].Priority.CompareTo(_elements[smallestIdx].Priority) < 0)
-                smallestIdx = rightIdx;
-
-            if (smallestIdx != idx)
+            while (leftIdx < Count && rightIdx < Count)
             {
+                var smallestIdx = idx;
+
+                if (leftIdx < Count && _elements[leftIdx].Priority.CompareTo(_elements[idx].Priority) < 0)
+                    smallestIdx = leftIdx;
+
+                if (rightIdx < Count && _elements[rightIdx].Priority.CompareTo(_elements[smallestIdx].Priority) < 0)
+                    smallestIdx = rightIdx;
+
+                if (smallestIdx == idx) return;
+
                 Swap(idx, smallestIdx);
-                HeapifyDown(smallestIdx);
-            }
+                idx = smallestIdx;
+
+                leftIdx = GetLeftChildIndex(idx);
+                rightIdx = GetRightChildIndex(idx);
+            }   
         }
 
         protected override void HeapifyUp(int idx)
         {
-            var parentIdx = GetParentIndex(idx);
-            if (idx > 0 && _elements[parentIdx].Priority.CompareTo(_elements[idx].Priority) > 0)
+            while (idx > 0)
             {
+                var parentIdx = GetParentIndex(idx);
+                if (_elements[parentIdx].Priority.CompareTo(_elements[idx].Priority) <= 0) return;
+
                 Swap(idx, parentIdx);
-                HeapifyUp(parentIdx);
+                idx = parentIdx;
             }
         }
     }

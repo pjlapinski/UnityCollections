@@ -113,6 +113,29 @@ public class HashSetTests
         Assert.That(_sut.Add(value), Is.True);
     }
 
+    [Test]
+    public void StressTest()
+    {
+        const int count = 10000;
+        for (var i = 0; i < count; ++i)
+        {
+            Assert.That(_sut.Add(i.ToString()), Is.True);
+        }
+
+        for (var i = 0; i < count; ++i)
+        {
+            Assert.That(_sut.Contains(i.ToString()));
+        }
+
+        for (var i = 0; i < count; ++i)
+        {
+            Assert.That(_sut.TryGetValue(i.ToString(), out _), Is.True);
+            Assert.That(_sut.Remove(i.ToString()), Is.True);
+        }
+
+        Assert.That(_sut.Count, Is.EqualTo(0));
+    }
+
     #endregion
 
     #region Retrieving Values

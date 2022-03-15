@@ -150,5 +150,22 @@ public class PriorityQueueTests
         Assert.That(priority, Is.EqualTo(2));
     }
 
+    [Test]
+    public void StressTest()
+    {
+        const int count = 10000;
+        for (var i = 0; i < count; ++i)
+        {
+            _sut.Enqueue(i.ToString(), i);
+        }
+
+        for (var i = 0; i < count; ++i)
+        {
+            Assert.That(_sut.TryDequeue(out _, out _), Is.True);
+        }
+
+        Assert.That(_sut.Count, Is.EqualTo(0));
+    }
+
     #endregion
 }

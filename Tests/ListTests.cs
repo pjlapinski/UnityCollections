@@ -132,6 +132,24 @@ public class ListTests
         Assert.Throws<ArgumentOutOfRangeException>(() => _sut.Insert(2, value));
     }
 
+    [Test]
+    public void StressTest()
+    {
+        const int count = 10000;
+        for (var i = 0; i < count; ++i)
+        {
+            _sut.Add(i.ToString());
+        }
+
+        for (var i = 0; i < count; ++i)
+        {
+            Assert.That(_sut.Remove(i.ToString()), Is.True);
+        }
+
+        Assert.That(_sut.Count, Is.EqualTo(0));
+    }
+
+
     #endregion
 
     #region Indexer
