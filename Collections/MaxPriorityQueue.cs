@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Collections
 {
+    [Serializable]
     public class MaxPriorityQueue<TValue, TPriority> : PriorityQueue<TValue, TPriority> where TPriority : IComparable<TPriority>
     {
         public MaxPriorityQueue(int capacity) : base(capacity) { }
@@ -18,10 +19,10 @@ namespace Collections
 
             var largestIdx = idx;
 
-            if (leftIdx < Count && _elements[leftIdx].Value.CompareTo(_elements[idx].Value) > 0)
+            if (leftIdx < Count && _elements[leftIdx].Priority.CompareTo(_elements[idx].Priority) > 0)
                 largestIdx = leftIdx;
 
-            if (rightIdx < Count && _elements[rightIdx].Value.CompareTo(_elements[largestIdx].Value) > 0)
+            if (rightIdx < Count && _elements[rightIdx].Priority.CompareTo(_elements[largestIdx].Priority) > 0)
                 largestIdx = rightIdx;
 
             if (largestIdx != idx)
@@ -34,7 +35,7 @@ namespace Collections
         protected override void HeapifyUp(int idx)
         {
             var parentIdx = GetParentIndex(idx);
-            if (idx > 0 && _elements[parentIdx].Value.CompareTo(_elements[idx].Value) < 0)
+            if (idx > 0 && _elements[parentIdx].Priority.CompareTo(_elements[idx].Priority) < 0)
             {
                 Swap(idx, parentIdx);
                 HeapifyUp(parentIdx);
